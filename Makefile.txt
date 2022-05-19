@@ -1,0 +1,14 @@
+CC=gcc
+CFLAGS= -Wall -g -fprofile-arcs -ftest-coverage
+
+all: Test
+Test.o: Test.c
+	${CC} -c Test.c -o Test.o ${CFLAGS}
+BigInteger.o: BN.c
+	${CC} -c BN.c -o BigInteger.o ${CFLAGS}
+Test: Test.o BigInteger.o
+	${CC} BigInteger.o Test.o -o Test ${CFLAGS}
+clean:
+	@rm -rf *.o *.gcno *.gcda *.gcov Test 2&>/dev/null
+tar:
+	tar czvf ../BigInteger_in_C.tgz ../BigInteger_in_C
