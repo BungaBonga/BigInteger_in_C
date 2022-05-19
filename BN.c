@@ -1,21 +1,37 @@
 #include "BN.h"
 
 
-bn* bn_new(void){
+bn* bn_new(bn_err *err){
 	bn* t = (bn*)malloc(sizeof(*t));
+	if (t == NULL) {
+		*err = EINVARG;
+		return NULL;
+	}
 	t->sign = 1;
 	t->size = 1;
 	t->r_s = 1;
-	t->d = (int*)calloc(1,sizeof(t->d));
+	t->d = (int*)calloc(1, sizeof(t->d));
+	if (t->d == NULL) {
+		*err = EINVARG;
+		return NULL;
+	}
 	return t;
 	}
 	
-bn* bn_init(bn const *orig){
+bn* bn_init(bn const *orig, bn_err *err){
 	bn * t = (bn*)malloc(sizeof(*t));
+	if (t == NULL) {
+		*err = EINVARG;
+		return NULL;
+	}
 	t->sign = orig->sign;
 	t->size = orig->size;
 	t->r_s = orig->r_s;
-	t->d = (int*)calloc(t->size,sizeof(t->d));
+	t->d = (int*)calloc(t->size, sizeof(t->d));
+	if (t->d == NULL) {
+		*err = EINVARG;
+		return NULL;
+	}
 	for(int i = 0; i < t->r_s; ++i){
 		t->d[i] = orig->d[i];
 		}
@@ -38,13 +54,17 @@ int bn_null(bn const * t){
 	}	
 	
 // добавление int к bn
-int add_int(bn* t, int c){
+int add_int(bn* t, int c, bn_err *err){
 	int x = c + t->d[0];
 	if (x < base){
 		t->d[0] = x;
 		return 0;
 	} else if (t->r_s == 1){
 		int* z = (int*)malloc(2*sizeof(int));
+		if (z == NULL) {
+			*err = EINVARG;
+			return NULL;
+		}
 		z[1] = x / base;
 		z[0] = x - z[1] * base;	
 	} else {
@@ -66,6 +86,11 @@ int add_int(bn* t, int c){
 		}else {
 			t->r_s += 1;
 			int * z = (int*)malloc(t->r_s*sizeof(int)); 
+			if (z == NULL) {
+				fprintf(stderr, "Invalig argument\n");
+				*err = EINVARG;
+				return NULL;
+			}
 			for(int j =0; j < t->r_s - 1; ++j){
 				z[j] = t->d[j];
 				}
@@ -80,7 +105,7 @@ int add_int(bn* t, int c){
 	}
 
 // умножение bn на int
-int multiple_int(bn* t, long c){
+int multiple_int(bn* t, long c, bn_err *err){
 	
 	long x = 0;
 	int r = 0;
@@ -94,6 +119,11 @@ int multiple_int(bn* t, long c){
 		t->r_s += 1;
 		t->size += 1;
 		t->d = realloc(t->d, t->r_s*sizeof(int));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		t->d[t->r_s - 1] = r;
 		}
 	return 0;
@@ -135,8 +165,13 @@ int div_int(bn* t, long c){
 	return r;
 	}
 			
-int bn_init_string(bn *t, const char *init_string){
+int bn_init_string(bn *t, const char *init_string, bn_err *err){
 	long from = 0, count = strlen(init_string);
+	if (t == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	t->sign = 1;
 	if(count == 0){
 		t->sign = 1;
@@ -144,6 +179,11 @@ int bn_init_string(bn *t, const char *init_string){
 		t->r_s = 1;
 		free(t->d);
 		t->d = (int*)calloc(1, sizeof(t->d));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		return 0;
 	} else {
 		int z = 0;
@@ -163,15 +203,24 @@ int bn_init_string(bn *t, const char *init_string){
 			t->size = 1;
 			t->r_s = 1;
 			free(t->d);
-			t->d = (int*)calloc(1, sizeof(t->d));			
+			t->d = (int*)calloc(1, sizeof(t->d));
+			if (t->d == NULL) {
+				fprintf(stderr, "Invalig argument\n");
+				*err = EINVARG;
+				return NULL;
+			}
 			return 0;
 			}
 		t->size = (count - from - 1)/9 + 1;
 		t->r_s = t->size;
 		free(t->d);
-		t->d = (int*)calloc(t->size, sizeof(t->d));		
+		t->d = (int*)calloc(t->size, sizeof(t->d));	
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		int x = 0;
-		
 		count -= 9;
 		for (; count >= from; count -= 9){
 			for(int j = 0; j < 9; j++){
@@ -186,9 +235,6 @@ int bn_init_string(bn *t, const char *init_string){
 			}
 			t->d[z++] = x;	
 		}
-		
-	
-
 	}
 	return count;
 	}
@@ -209,12 +255,17 @@ char int_to_ch (int c){
 		}
 	}
 
-int bn_init_string_radix(bn *t, const char *init_string, int radix){
+int bn_init_string_radix(bn *t, const char *init_string, int radix, bn_err *err){
 	t->sign = 1;
 	t->size = 1;
 	t->r_s = 1;
 	free(t->d);
 	t->d = (int*)calloc(1, sizeof(t->d));
+	if (t->d == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	long from = 0, count = strlen(init_string);
 	if(count == 0){
 		return 0;
@@ -234,26 +285,36 @@ int bn_init_string_radix(bn *t, const char *init_string, int radix){
 			}
 		}
 	for(int i = from; i < count; ++i){	
-		multiple_int(t, radix);
-		add_int(t, ch_to_int(init_string[i]));
+		multiple_int(t, radix, err);
+		add_int(t, ch_to_int(init_string[i]), err);
 		}
 	return 0;
 	}
 
 
-const char *bn_to_string(bn const *t, int radix){
+const char *bn_to_string(bn const *t, int radix, bn_err *err){
 	if(bn_null(t) == 1){
 		char * c = (char*)malloc(2*sizeof(*c));
+		if (c == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		c[0] = '0';
 		c[1] = '\0';
 		return c;
 		}
-	bn * z = bn_init(t);
+	bn * z = bn_init(t, err);
 	int s = 10;
 	int it = 0, from = 0;
 	char q;
 	int a;
 	char * c = (char*)malloc(s*sizeof(*c));
+	if (c == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	for(int i = 0; i < s; ++i){
 		c[i] = '\0';
 		}
@@ -269,6 +330,11 @@ const char *bn_to_string(bn const *t, int radix){
 		if(it == s - 1){
 			s += 15;
 			c = realloc(c, s);
+			if (c == NULL) {
+				fprintf(stderr, "Invalig argument\n");
+				*err = EINVARG;
+				return NULL;
+			}
 			for(int i = it; i < s; ++i){
 				c[i] = '\0';
 				}
@@ -278,7 +344,7 @@ const char *bn_to_string(bn const *t, int radix){
 			}	
 		}
 	bn_delete(z);
-	for(int i = 0; i < (it/2); ++i){
+	for(int i = 0; i < (it / 2); ++i){
 		q = c[i + from];
 		c[i + from] = c[it - i - 1];
 		c[it - i - 1] = q;
@@ -286,7 +352,7 @@ const char *bn_to_string(bn const *t, int radix){
 	return c;
 	}
 
-int bn_init_int(bn *t, int init_int){
+int bn_init_int(bn *t, int init_int, bn_err *err){
 	if(init_int > 0){
 		t->sign = 1;
 	} else{
@@ -297,13 +363,23 @@ int bn_init_int(bn *t, int init_int){
 		t->size = 1;
 		t->r_s = 1;
 		free(t->d);
-		t->d = (int*)calloc(t->size,sizeof(t->d));
+		t->d = (int*)calloc(t->size, sizeof(t->d));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		*t->d = init_int;
 	} else {
 		t->size = 2;
 		t->r_s = 2;
 		free(t->d);
 		t->d = (int*)calloc(t->size,sizeof(t->d));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		*t->d = init_int % base;
 		*(t->d + 1) = init_int / base;	
 		}
@@ -395,9 +471,14 @@ int bn_sign(bn const *t){
 	}
 
 	// для  + +		
-int *add(const bn *t, const  bn *right, int * size){
+int *add(const bn *t, const  bn *right, int * size, bn_err *err){
 	*size = (right->r_s > t->r_s ? right->r_s : t->r_s) + 1 ;
 	int * z = (int *)calloc(*size, sizeof(int));
+	if (z == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	int r = 0, i = 0;
 	int x = 0, mi = (right->r_s > t->r_s ? t->r_s : right->r_s);
 	for(; i < mi; ++i){
@@ -446,10 +527,14 @@ int *add(const bn *t, const  bn *right, int * size){
 	}
 	
 	// для  t>=right
-int *diff(const bn *t, const bn *right, int * size){
-	
+int *diff(const bn *t, const bn *right, int * size, bn_err *err){
 	*size = (right->r_s > t->r_s ? right->r_s : t->r_s) + 1;
 	int * z = (int *)calloc(*size, sizeof(int));
+	if (z == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	int r = 0;
 	int x = 0, mi = (right->r_s > t->r_s ? t->r_s : right->r_s);
 	for(int i = 0; i < mi; ++i){
@@ -482,9 +567,14 @@ int *diff(const bn *t, const bn *right, int * size){
 	}	
 	
 	//для перемножения модулей чисел
-int* multiple(const bn *t, const  bn *right, int * size){
+int* multiple(const bn *t, const  bn *right, int * size, bn_err *err){
 	*size = right->r_s + t->r_s + 1;
 	int* z = (int *)calloc(*size, sizeof(int));
+	if (z == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	int r = 0, i = 0, j = 0;
 	long long x;
 	for(i = 0; i < right->r_s; ++i){
@@ -511,11 +601,11 @@ int* multiple(const bn *t, const  bn *right, int * size){
 	}
 		
 //----------------------------------------------------	
-int bn_add_to(bn *t, bn const *right){	
+int bn_add_to(bn *t, bn const *right, bn_err *err){	
 	int si;
 	int * size = &si;
 	int *z;
-	
+
 	if(t->sign ^ right->sign){
 		int s = bn_abs_cmp(t, right);		
 		if(s == 0){
@@ -524,11 +614,16 @@ int bn_add_to(bn *t, bn const *right){
 			t->r_s = 1;
 			t->size = 2;
 			t->d = (int *)calloc(2, sizeof(int));
+			if (t->d == NULL) {
+				fprintf(stderr, "Invalig argument\n");
+				*err = EINVARG;
+				return NULL;
+			}
 			return 0;
 		} else if(s > 0){
-			z = diff(t, right,size);			
+			z = diff(t, right, size, err);			
 		} else {
-			z = diff(right, t, size);
+			z = diff(right, t, size, err);
 			t->sign = (t->sign + 1) % 2;
 			}			
 		free(t->d);
@@ -539,6 +634,11 @@ int bn_add_to(bn *t, bn const *right){
 		
 		if(t->size - t->r_s > 1){
 			z = calloc((t->r_s + 1), sizeof(int));
+			if (z == NULL) {
+				fprintf(stderr, "Invalig argument\n");
+				*err = EINVARG;
+				return NULL;
+			}
 			for(int i = 0; i < t->r_s; ++i){
 				z[i] = t->d[i];
 				}
@@ -547,7 +647,7 @@ int bn_add_to(bn *t, bn const *right){
 			t->size = t->r_s + 1;
 			}
 	} else {	
-		z = add(t, right, size);
+		z = add(t, right, size, err);
 		t->size = *size;
 		free(t->d);
 		t->d = z;
@@ -558,41 +658,44 @@ int bn_add_to(bn *t, bn const *right){
 	}
 
 int bn_sub_to(bn *t, bn const *right){
-	bn * f = bn_new();
+	bn_err err;
+	bn * f = bn_new(&err);
 	f->size = right->size;
 	f->r_s = right->r_s;
 	free(f->d);
 	f->d = right->d;
 	f->sign = right->sign;
 	bn_neg(f);
-	bn_add_to(t,f);
+	bn_add_to(t, f, &err);
 	f->d = NULL;
 	bn_delete(f);
 	return 0;
 	}
 
 bn* bn_add(bn const *left, bn const *right){
-	bn * f = bn_init(left);
-	bn_add_to(f, right);
+	bn_err err;
+	bn * f = bn_init(left, &err);
+	bn_add_to(f, right, &err);
 	return f;
 	}
 
 bn* bn_sub(bn const *left, bn const *right){
-	bn * f = bn_new();
+	bn_err err;
+	bn* f = bn_new(&err);
 	free(f->d);
 	f->size = right->size;
 	f->r_s = right->r_s;
 	f->d = right->d;
 	f->sign = right->sign;
 	bn_neg(f);
-	bn * t = bn_add(left, f);
+	bn* t = bn_add(left, f);
 	f->d = NULL;
 	bn_delete(f);
 	return t;
 	
 	}
 
-int bn_mul_to(bn *t, bn const *right){
+int bn_mul_to(bn *t, bn const *right, bn_err *err){
 	int si = 0;
 	int * size = &si;
 	if (t->sign ^ right->sign){
@@ -605,13 +708,23 @@ int bn_mul_to(bn *t, bn const *right){
 		t->r_s = 1;
 		free(t->d);
 		t->d = (int*)calloc(t->size, sizeof(*t->d));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		return 0;
 		}
 	if (right->r_s == 1 && right->d[0] == 1){
 			return 0;
 		} 
 	
-	int * z = multiple(t, right,size);
+	int * z = multiple(t, right, size, err);
+	if (z == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
 	free(t->d);
 	t->size = *size;
 	t->d = z;
@@ -621,6 +734,11 @@ int bn_mul_to(bn *t, bn const *right){
 	t->r_s = *size;
 	if(t->size - t->r_s > 1){
 		t->d = realloc(t->d, (t->r_s + 1)*sizeof(int));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		t->size = t->r_s + 1;
 		}
 	return 0;
@@ -629,8 +747,9 @@ int bn_mul_to(bn *t, bn const *right){
 	}
 
 bn* bn_mul(bn const *left, bn const *right){
-	bn *t = bn_init(left);
-	bn_mul_to(t, right);
+	bn_err err;
+	bn *t = bn_init(left, &err);
+	bn_mul_to(t, right, &err);
 	return t;
 	}
 
@@ -642,7 +761,7 @@ int move(bn* t){
 	return 0;
 	}
 
-int bn_div_to(bn *t, bn const *right){	
+int bn_div_to(bn *t, bn const *right, bn_err *err){	
 	if (t->sign ^ right->sign){
 		t->sign = 0;
 	} else {
@@ -656,6 +775,11 @@ int bn_div_to(bn *t, bn const *right){
 			t->size = 2;
 			t->r_s = 1;
 			t->d = realloc(t->d, t->size*sizeof(*t->d));
+			if (t->d == NULL) {
+				fprintf(stderr, "Invalig argument\n");
+				*err = EINVARG;
+				return NULL;
+			}
 			t->d[0] = 0;
 			return 0;
 			}	
@@ -665,22 +789,32 @@ int bn_div_to(bn *t, bn const *right){
 		t->size = 2;
 		t->r_s = 1;
 		t->d = realloc(t->d, t->size*sizeof(*t->d));
+		if (t->d == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		t->d[0] = 0;
 		if (h == 0){
 			t->d[0] = 1;
 			}
 		return 0;
 		}
-	bn * proto_t = bn_init(t);
-	bn *rez = bn_new();
+	bn * proto_t = bn_init(t, err);
+	bn *rez = bn_new(err);
 	rez->size = t->size + 1;
 	rez->r_s = 0;
 	free(rez->d);
 	rez->d = NULL;
 	rez->d = (int*)calloc(rez->size, sizeof(*rez->d));
-	bn * cur = bn_init(rez);
+	if (rez->d == NULL) {
+		fprintf(stderr, "Invalig argument\n");
+		*err = EINVARG;
+		return NULL;
+	}
+	bn * cur = bn_init(rez, err);
 	cur->r_s = 0;
-	bn * prom = bn_init(rez);
+	bn * prom = bn_init(rez, err);
 	int x, l, r, m;
 	long long i;
 	for (i = t->r_s - 1; i >= 0; --i) {		
@@ -722,7 +856,7 @@ int bn_div_to(bn *t, bn const *right){
     if(t->sign == 0){
 		rez = bn_mul(t, right);
 		if(bn_abs_cmp(rez, proto_t) < 0){
-			add_int(t, 1);
+			add_int(t, 1, err);
 			}
 		bn_delete(rez);	
 		}
@@ -731,6 +865,11 @@ int bn_div_to(bn *t, bn const *right){
 	while((t->d[t->r_s - 1] == 0) &&  (t->r_s - 1 > 0)){ --t->r_s; }
 	if(t->size - t->r_s > 1){
 		int *z = calloc((t->r_s + 1), sizeof(*z));
+		if (z == NULL) {
+			fprintf(stderr, "Invalig argument\n");
+			*err = EINVARG;
+			return NULL;
+		}
 		for(int i = 0; i < t->r_s; ++i){
 			z[i] = t->d[i];
 			}
@@ -742,20 +881,8 @@ int bn_div_to(bn *t, bn const *right){
 	}
 			
 bn* bn_div(bn const *left, bn const *right){
-	bn * m = bn_init(left);
-	bn_div_to(m, right);
+	bn_err err;
+	bn * m = bn_init(left, &err);
+	bn_div_to(m, right, &err);
 	return m;	
 	}
-
-int copy(bn* t, bn* f){
-	if(t->r_s < f->r_s){
-		t->size = f->size;
-		t->d = realloc(t->d, f->size*sizeof(int));
-		}
-	for(int j = 0; j < f->r_s; ++j){
-		t->d[j] = f->d[j];
-		}
-	t->r_s = f->r_s;
-	return 0;
-	}
-

@@ -1,14 +1,14 @@
 #include "BN.h"
 
 int main() {
-	bn* k = bn_new();
-
-	/*for(int i = 1;i < 10000;++i){
-		multiple_int(k,i);
-	}*/
-	bn_init_int(k, 1000000000);
-	print(k);
-	//printf("%d \n %.06f \n",k->r_s,(clock()- tt)*1.0/CLOCKS_PER_SEC);
-	//print(k);
+	bn_err err;
+	bn* k = bn_new(&err);
+	bn* t = bn_new(&err);
+	bn_init_string(t, "100000000000000000", &err);
+	bn_init_string(k, "200000000000000000", &err);
+	t = bn_mul(t, k);
+	print(t);
+	bn_delete(t);
+	bn_delete(k);
 	return 0;
 }
