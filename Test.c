@@ -51,7 +51,7 @@ int main() {
 
 	bn_init_string(t, "", &err);
 
-	bn_init_string(t, "- \0", &err);
+	bn_init_string(t, "\0", &err);
 
 	bn_init_int(t, 100000, &err);
 
@@ -63,7 +63,7 @@ int main() {
 
 	bn_delete(t);
 	t = bn_new();
-	add_int(t, base + 1, &err);
+	add_int(t, 1000000001, &err);
 
 	bn_abs(t);
 
@@ -108,7 +108,7 @@ int main() {
 	bn_delete(l);
 	l = bn_div(t, p);
 
-	char* c = bn_to_string(k, 10, &err);
+	free(bn_to_string(k, 10, &err));
 
 	bn_cmp(t, k);
 
@@ -119,15 +119,14 @@ int main() {
 	print(p);
 	print(l);
 	print(f);
-	printf("%c", *c);
 
+	bn_delete(u);
 	bn_delete(t);
 	bn_delete(k);
 	bn_delete(l);
 	bn_delete(p);
 	bn_delete(m);
 	bn_delete(f);
-	free(c);
 	free(a);
 	return 0;
 }
