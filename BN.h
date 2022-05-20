@@ -42,9 +42,9 @@ int bn_delete(bn* t);
 
 int bn_null(bn const* t);
 
-int add_int(bn* t, int c, bn_err* err);
+void add_int(bn* t, int c, bn_err* err);
 
-int multiple_int(bn* t, long c, bn_err* err);
+void multiple_int(bn* t, long c, bn_err* err);
 
 int multiple_int_bn(bn* rez, const bn* t, long c);
 
@@ -56,7 +56,7 @@ int ch_to_int(char c);
 
 char int_to_ch(int c);
 
-int bn_init_string_radix(bn* t, const char* init_string, int radix, bn_err* err);
+void bn_init_string_radix(bn* t, const char* init_string, int radix, bn_err* err);
 
 const char* bn_to_string(bn const* t, int radix, bn_err* err);
 

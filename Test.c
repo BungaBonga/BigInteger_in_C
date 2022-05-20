@@ -6,8 +6,8 @@ int main() {
 	bn* t = bn_new(&err);
 	bn_init_string(t, "100000000000000000", &err);
 	bn_init_string(k, "200000000000000000", &err);
-	t = bn_mul(t, k);
-	print(t);
+	bn* l = bn_mul(t, k);
+	print(l);
 	bn_delete(t);
 	bn_delete(k);
 	return 0;

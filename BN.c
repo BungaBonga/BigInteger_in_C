@@ -40,9 +40,7 @@ bn* bn_init(bn const *orig, bn_err *err){
 	
 int bn_delete(bn *t){
 	free(t->d);
-	t->d = NULL;
 	free(t);
-	t = NULL;
 	return 0;
 	}
 	
@@ -54,11 +52,11 @@ int bn_null(bn const * t){
 	}	
 	
 // добавление int к bn
-int add_int(bn* t, int c, bn_err *err){
+void add_int(bn* t, int c, bn_err *err){
 	int x = c + t->d[0];
 	if (x < base){
 		t->d[0] = x;
-		return 0;
+		return;
 	} else if (t->r_s == 1){
 		int* z = (int*)malloc(2*sizeof(int));
 		if (z == NULL) {
@@ -97,16 +95,15 @@ int add_int(bn* t, int c, bn_err *err){
 			z[i] = 1;
 			free(t->d);
 			t->d = z;
-			return 0;
+			return;
 			}
 		}	
 	}
-	return 0;
+	return;
 	}
 
 // умножение bn на int
-int multiple_int(bn* t, long c, bn_err *err){
-	
+void multiple_int(bn* t, long c, bn_err *err){
 	long x = 0;
 	int r = 0;
 	for( int i = 0; i < t->r_s; ++i){	
@@ -118,7 +115,7 @@ int multiple_int(bn* t, long c, bn_err *err){
 	if(r > 0){
 		t->r_s += 1;
 		t->size += 1;
-		t->d = realloc(t->d, t->r_s*sizeof(int));
+		t->d = realloc(t->d, t->r_s * sizeof(int));
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
@@ -126,7 +123,7 @@ int multiple_int(bn* t, long c, bn_err *err){
 		}
 		t->d[t->r_s - 1] = r;
 		}
-	return 0;
+	return;
 	}
 
 int multiple_int_bn(bn* rez, const bn* t, long c){
@@ -157,21 +154,16 @@ int div_int(bn* t, long c){
 	long r = 0;
 	long z = 0;
 	for(int i = t->r_s - 1; i >= 0; --i){	
-		z = (t->d[i] + r*base);
-		x = z / c;		
-		r = z - x*c;		
+		z = (t->d[i] + r * base);
+		x = z / c;
+		r = z - x*c;
 		t->d[i] = x;
-		}		
+		}
 	return r;
 	}
 			
 int bn_init_string(bn *t, const char *init_string, bn_err *err){
 	long from = 0, count = strlen(init_string);
-	if (t == NULL) {
-		fprintf(stderr, "Invalig argument\n");
-		*err = EINVARG;
-		return NULL;
-	}
 	t->sign = 1;
 	if(count == 0){
 		t->sign = 1;
@@ -182,7 +174,7 @@ int bn_init_string(bn *t, const char *init_string, bn_err *err){
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		return 0;
 	} else {
@@ -207,18 +199,18 @@ int bn_init_string(bn *t, const char *init_string, bn_err *err){
 			if (t->d == NULL) {
 				fprintf(stderr, "Invalig argument\n");
 				*err = EINVARG;
-				return NULL;
+				return _CRT_INT_MAX;
 			}
 			return 0;
 			}
 		t->size = (count - from - 1)/9 + 1;
 		t->r_s = t->size;
 		free(t->d);
-		t->d = (int*)calloc(t->size, sizeof(t->d));	
+		t->d = (int*)calloc(t->size, sizeof(t->d));
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		int x = 0;
 		count -= 9;
@@ -255,7 +247,7 @@ char int_to_ch (int c){
 		}
 	}
 
-int bn_init_string_radix(bn *t, const char *init_string, int radix, bn_err *err){
+void bn_init_string_radix(bn *t, const char *init_string, int radix, bn_err *err){
 	t->sign = 1;
 	t->size = 1;
 	t->r_s = 1;
@@ -268,7 +260,7 @@ int bn_init_string_radix(bn *t, const char *init_string, int radix, bn_err *err)
 	}
 	long from = 0, count = strlen(init_string);
 	if(count == 0){
-		return 0;
+		return;
 	} else {
 		if(init_string[0] == '-'){
 			t->sign = 0;
@@ -281,25 +273,20 @@ int bn_init_string_radix(bn *t, const char *init_string, int radix, bn_err *err)
 			++from;
 			}
 		if(init_string[from] == '\0'){		
-			return 0;
+			return;
 			}
 		}
 	for(int i = from; i < count; ++i){	
 		multiple_int(t, radix, err);
 		add_int(t, ch_to_int(init_string[i]), err);
 		}
-	return 0;
+	return;
 	}
 
 
 const char *bn_to_string(bn const *t, int radix, bn_err *err){
 	if(bn_null(t) == 1){
 		char * c = (char*)malloc(2*sizeof(*c));
-		if (c == NULL) {
-			fprintf(stderr, "Invalig argument\n");
-			*err = EINVARG;
-			return NULL;
-		}
 		c[0] = '0';
 		c[1] = '\0';
 		return c;
@@ -310,11 +297,6 @@ const char *bn_to_string(bn const *t, int radix, bn_err *err){
 	char q;
 	int a;
 	char * c = (char*)malloc(s*sizeof(*c));
-	if (c == NULL) {
-		fprintf(stderr, "Invalig argument\n");
-		*err = EINVARG;
-		return NULL;
-	}
 	for(int i = 0; i < s; ++i){
 		c[i] = '\0';
 		}
@@ -330,11 +312,6 @@ const char *bn_to_string(bn const *t, int radix, bn_err *err){
 		if(it == s - 1){
 			s += 15;
 			c = realloc(c, s);
-			if (c == NULL) {
-				fprintf(stderr, "Invalig argument\n");
-				*err = EINVARG;
-				return NULL;
-			}
 			for(int i = it; i < s; ++i){
 				c[i] = '\0';
 				}
@@ -367,7 +344,7 @@ int bn_init_int(bn *t, int init_int, bn_err *err){
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		*t->d = init_int;
 	} else {
@@ -378,7 +355,7 @@ int bn_init_int(bn *t, int init_int, bn_err *err){
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		*t->d = init_int % base;
 		*(t->d + 1) = init_int / base;	
@@ -477,7 +454,7 @@ int *add(const bn *t, const  bn *right, int * size, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return NULL;
+		return _CRT_INT_MAX;
 	}
 	int r = 0, i = 0;
 	int x = 0, mi = (right->r_s > t->r_s ? t->r_s : right->r_s);
@@ -533,7 +510,7 @@ int *diff(const bn *t, const bn *right, int * size, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return NULL;
+		return _CRT_INT_MAX;
 	}
 	int r = 0;
 	int x = 0, mi = (right->r_s > t->r_s ? t->r_s : right->r_s);
@@ -573,7 +550,7 @@ int* multiple(const bn *t, const  bn *right, int * size, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return NULL;
+		return _CRT_INT_MAX;
 	}
 	int r = 0, i = 0, j = 0;
 	long long x;
@@ -617,7 +594,7 @@ int bn_add_to(bn *t, bn const *right, bn_err *err){
 			if (t->d == NULL) {
 				fprintf(stderr, "Invalig argument\n");
 				*err = EINVARG;
-				return NULL;
+				return _CRT_INT_MAX;
 			}
 			return 0;
 		} else if(s > 0){
@@ -637,7 +614,7 @@ int bn_add_to(bn *t, bn const *right, bn_err *err){
 			if (z == NULL) {
 				fprintf(stderr, "Invalig argument\n");
 				*err = EINVARG;
-				return NULL;
+				return _CRT_INT_MAX;
 			}
 			for(int i = 0; i < t->r_s; ++i){
 				z[i] = t->d[i];
@@ -711,7 +688,7 @@ int bn_mul_to(bn *t, bn const *right, bn_err *err){
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		return 0;
 		}
@@ -723,7 +700,7 @@ int bn_mul_to(bn *t, bn const *right, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return NULL;
+		return _CRT_INT_MAX;
 	}
 	free(t->d);
 	t->size = *size;
@@ -737,7 +714,7 @@ int bn_mul_to(bn *t, bn const *right, bn_err *err){
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		t->size = t->r_s + 1;
 		}
@@ -778,7 +755,7 @@ int bn_div_to(bn *t, bn const *right, bn_err *err){
 			if (t->d == NULL) {
 				fprintf(stderr, "Invalig argument\n");
 				*err = EINVARG;
-				return NULL;
+				return _CRT_INT_MAX;
 			}
 			t->d[0] = 0;
 			return 0;
@@ -792,7 +769,7 @@ int bn_div_to(bn *t, bn const *right, bn_err *err){
 		if (t->d == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		t->d[0] = 0;
 		if (h == 0){
@@ -810,7 +787,7 @@ int bn_div_to(bn *t, bn const *right, bn_err *err){
 	if (rez->d == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return NULL;
+		return _CRT_INT_MAX;
 	}
 	bn * cur = bn_init(rez, err);
 	cur->r_s = 0;
@@ -868,7 +845,7 @@ int bn_div_to(bn *t, bn const *right, bn_err *err){
 		if (z == NULL) {
 			fprintf(stderr, "Invalig argument\n");
 			*err = EINVARG;
-			return NULL;
+			return _CRT_INT_MAX;
 		}
 		for(int i = 0; i < t->r_s; ++i){
 			z[i] = t->d[i];
