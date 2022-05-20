@@ -53,9 +53,11 @@ void add_int(bn* t, int c, bn_err *err){
 		t->d[0] = x;
 		return;
 	} else if (t->r_s == 1){
-		int* z = (int*)malloc(2*sizeof(int));
-		z[1] = x / base;
-		z[0] = x - z[1] * base;	
+		t->size += 1;
+		t->r_s += 1;
+		t->d = realloc(t->d, 2 * sizeof(int));
+		t->d[1] = x / base;
+		t->d[0] = x % base;	
 	} else {
 	int r = 0, i = 0;
 	for(; i < t->r_s; ++i){
@@ -70,20 +72,8 @@ void add_int(bn* t, int c, bn_err *err){
 		x = 0;
 		}
 	if (r == 1){
-		if(i <= t->r_s){
-			t->d[i] = 1;
-		}else {
-			t->r_s += 1;
-			int * z = (int*)malloc(t->r_s*sizeof(int)); 
-			for(int j =0; j < t->r_s - 1; ++j){
-				z[j] = t->d[j];
-				}
-			z[i] = 1;
-			free(t->d);
-			t->d = z;
-			return;
-			}
-		}	
+		t->d[i] = 1;
+	}	
 	}
 	return;
 	}
