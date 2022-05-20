@@ -3,7 +3,25 @@
 int main() {
 	bn_err err;
 
-	bn* t = bn_new();
+	bn* t = NULL;
+
+	bn* u;
+
+	u = bn_init(t, &err);
+
+	bn_delete(u);
+
+	add_int(t, 1, &err);
+
+	multiple_int(t, 1, &err);
+
+	bn_init_string(t, "", &err);
+
+
+
+	t = bn_new();
+
+	bn_to_string(t, 10, &err);
 
 	bn_init_string(t, "", &err);
 
@@ -29,7 +47,9 @@ int main() {
 
 	bn_cmp(f, t);
 
-	bn* h = bn_add(f, k);
+	bn_delete(l);
+
+	l = bn_add(f, k);
 
 	add_int(f, 1000000, &err);
 
@@ -43,13 +63,17 @@ int main() {
 
 	div_int(p, 10000000);
 
-	bn_init_int(h ,	1, &err);
+	bn_init_int(l ,	1, &err);
 
-	bn* u = bn_div(t, h);
+	bn_delete(p);
+
+	p = bn_div(t, l);
 
 	bn_init_int(p, base + 1, &err);
 
-	bn* g = bn_div(t, p);
+	bn_delete(l);
+
+	l = bn_div(t, p);
 
 	char* c = bn_to_string(k, 10, &err);
 
@@ -64,15 +88,12 @@ int main() {
 	print(f);
 	printf("%c", *c);
 
-	bn_delete(u);
-	bn_delete(g);
 	bn_delete(t);
 	bn_delete(k);
 	bn_delete(l);
 	bn_delete(p);
 	bn_delete(m);
 	bn_delete(f);
-	bn_delete(h);
 	free(c);
 	return 0;
 }

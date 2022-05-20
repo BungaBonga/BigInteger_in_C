@@ -27,6 +27,9 @@ bn* bn_init(bn const *orig, bn_err *err){
 	}
 	
 int bn_delete(bn *t){
+	if (t == NULL) {
+		return 0;
+	}
 	free(t->d);
 	free(t);
 	return 0;
