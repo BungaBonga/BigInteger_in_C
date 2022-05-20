@@ -16,7 +16,8 @@
 #include <malloc.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <limits.h>
+#include <stdlib.h>
 
 static const int base = 1000000000;
 
