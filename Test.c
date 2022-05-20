@@ -45,15 +45,17 @@ int main() {
 
 	bn_init_int(h ,	1, &err);
 
-	copy(p, bn_div(t, h), &err);
+	bn* u = bn_div(t, h);
 
 	bn_init_int(p, base + 1, &err);
 
-	copy(h, bn_div(t, p), &err);
+	bn* g = bn_div(t, p);
 
 	char* c = bn_to_string(k, 10, &err);
 
 	bn_cmp(t, k);
+
+	copy(l, m, &err);
 
 	print(m);
 	print(k);
@@ -62,6 +64,8 @@ int main() {
 	print(f);
 	printf("%c", *c);
 
+	bn_delete(u);
+	bn_delete(g);
 	bn_delete(t);
 	bn_delete(k);
 	bn_delete(l);

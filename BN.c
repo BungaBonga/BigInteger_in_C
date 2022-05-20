@@ -1,7 +1,7 @@
 #include "BN.h"
 
 
-bn* bn_new(){
+bn* bn_new() {
 	bn* t = (bn*)malloc(sizeof(*t));
 	t->sign = 1;
 	t->size = 1;
@@ -542,7 +542,7 @@ int bn_add_to(bn *t, bn const *right, bn_err *err){
 
 int bn_sub_to(bn *t, bn const *right){
 	bn_err err;
-	bn * f = bn_new(&err);
+	bn * f = bn_new();
 	f->size = right->size;
 	f->r_s = right->r_s;
 	free(f->d);
@@ -563,8 +563,7 @@ bn* bn_add(bn const *left, bn const *right){
 	}
 
 bn* bn_sub(bn const *left, bn const *right){
-	bn_err err;
-	bn* f = bn_new(&err);
+	bn* f = bn_new();
 	free(f->d);
 	f->size = right->size;
 	f->r_s = right->r_s;
@@ -667,7 +666,7 @@ int bn_div_to(bn *t, bn const *right, bn_err *err){
 		return 0;
 		}
 	bn * proto_t = bn_init(t, err);
-	bn *rez = bn_new(err);
+	bn *rez = bn_new();
 	rez->size = t->size + 1;
 	rez->r_s = 0;
 	free(rez->d);
