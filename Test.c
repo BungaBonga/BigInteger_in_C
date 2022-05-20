@@ -37,18 +37,33 @@ int main() {
 
 
 	t = bn_new();
+	u = bn_new();
+
+	bn_mul_to(u, t, &err);
+
+	bn_div_to(u, t, &err);
 
 	print(t);
 
-	bn_init_int(t, -100, &err);
-
 	free(bn_to_string(t, 10, &err));
+
+	bn_init_int(t, -100, &err);
 
 	bn_init_string(t, "", &err);
 
-	bn_init_string(t, "\0", &err);
+	bn_init_string(t, "- \0", &err);
 
 	bn_init_int(t, 100000, &err);
+
+	multiple_int(t, 10000000, &err);
+
+	bn_delete(t);
+	t = bn_new();
+	add_int(t, 1, &err);
+
+	bn_delete(t);
+	t = bn_new();
+	add_int(t, base + 1, &err);
 
 	bn_abs(t);
 
