@@ -3,12 +3,13 @@
 int main() {
 	bn_err err;
 
+	int* a = NULL;
+
 	bn* t = NULL;
 
 	bn* u;
 
 	u = bn_init(t, &err);
-
 	bn_delete(u);
 
 	add_int(t, 1, &err);
@@ -17,11 +18,31 @@ int main() {
 
 	bn_init_string(t, "", &err);
 
+	bn_init_int(t, 100, &err);
+
+	free(add(t, u, a, &err));
+
+	free(diff(t, u, a, &err));
+
+	free(multiple(t, u, a, &err));
+
+	bn_add_to(t, u, &err);
+
+	bn_mul_to(t, u, &err);
+
+	bn_div_to(t, u, &err);
+
+	copy(t, u, &err);
+
 
 
 	t = bn_new();
 
-	bn_to_string(t, 10, &err);
+	print(t);
+
+	bn_init_int(t, -100, &err);
+
+	free(bn_to_string(t, 10, &err));
 
 	bn_init_string(t, "", &err);
 
@@ -48,7 +69,6 @@ int main() {
 	bn_cmp(f, t);
 
 	bn_delete(l);
-
 	l = bn_add(f, k);
 
 	add_int(f, 1000000, &err);
@@ -66,13 +86,11 @@ int main() {
 	bn_init_int(l ,	1, &err);
 
 	bn_delete(p);
-
 	p = bn_div(t, l);
 
 	bn_init_int(p, base + 1, &err);
 
 	bn_delete(l);
-
 	l = bn_div(t, p);
 
 	char* c = bn_to_string(k, 10, &err);
@@ -95,5 +113,6 @@ int main() {
 	bn_delete(m);
 	bn_delete(f);
 	free(c);
+	free(a);
 	return 0;
 }
