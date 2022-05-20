@@ -21,7 +21,7 @@ int main() {
 
 	bn* l = bn_mul(t, k);
 	
-	bn* p = bn_add(l, k);
+	bn* p = bn_add(t, k);
 	
 	bn* m = bn_div(t, k);
 
@@ -45,11 +45,11 @@ int main() {
 
 	bn_init_int(h ,	1, &err);
 
-	p = bn_div(t, h);
+	copy(p, bn_div(t, h), &err);
 
 	bn_init_int(p, base + 1, &err);
 
-	h = bn_div(t, p);
+	copy(h, bn_div(t, p), &err);
 
 	char* c = bn_to_string(k, 10, &err);
 
@@ -62,13 +62,13 @@ int main() {
 	print(f);
 	printf("%c", *c);
 
-	bn_delete(h);
-	bn_delete(f);
-	bn_delete(m);
-	bn_delete(p);
-	bn_delete(l);
 	bn_delete(t);
 	bn_delete(k);
+	bn_delete(l);
+	bn_delete(p);
+	bn_delete(m);
+	bn_delete(f);
+	bn_delete(h);
 	free(c);
 	return 0;
 }

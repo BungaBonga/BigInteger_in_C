@@ -276,7 +276,7 @@ int bn_init_int(bn *t, int init_int, bn_err *err){
 		t->size = 2;
 		t->r_s = 2;
 		free(t->d);
-		t->d = (int*)calloc(t->size,sizeof(t->d));
+		t->d = (int*)calloc(t->size, sizeof(t->d));
 		*t->d = init_int % base;
 		*(t->d + 1) = init_int / base;	
 		}
@@ -557,7 +557,7 @@ int bn_sub_to(bn *t, bn const *right){
 
 bn* bn_add(bn const *left, bn const *right){
 	bn_err err;
-	bn * f = bn_init(left, &err);
+	bn* f = bn_init(left, &err);
 	bn_add_to(f, right, &err);
 	return f;
 	}
@@ -742,3 +742,19 @@ bn* bn_div(bn const *left, bn const *right){
 	bn_div_to(m, right, &err);
 	return m;	
 	}
+
+int copy(bn* t, bn* f, bn_err *err) {
+	if (t == NULL || f == NULL) {
+		*err = EINVARG;
+		return INT_MAX;
+	}
+	if (t->r_s < f->r_s) {
+		t->size = f->size;
+		t->d = realloc(t->d, f->size * sizeof(int));
+	}
+	for (int j = 0; j < f->r_s; ++j) {
+		t->d[j] = f->d[j];
+	}
+	t->r_s = f->r_s;
+	return 0;
+}

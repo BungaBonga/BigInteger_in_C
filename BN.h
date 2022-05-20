@@ -95,4 +95,6 @@ int bn_div_to(bn* t, bn const* right, bn_err* err);
 
 bn* bn_div(bn const* left, bn const* right);
 
+int copy(bn* t, bn* f, bn_err* err);
+
 #endif // BN
