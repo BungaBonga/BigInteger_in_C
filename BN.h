@@ -35,7 +35,7 @@ typedef enum {
 	EINVARG
 } bn_err;
 
-bn* bn_new(bn_err *err);
+bn* bn_new();
 
 bn* bn_init(bn const* orig, bn_err* err);
 
@@ -55,7 +55,7 @@ int bn_init_string(bn* t, const char* init_string, bn_err* err);
 
 char int_to_ch(int c);
 
-const char* bn_to_string(bn const* t, int radix, bn_err* err);
+char* bn_to_string(bn const* t, int radix, bn_err* err);
 
 int bn_init_int(bn* t, int init_int, bn_err* err);
 
