@@ -230,14 +230,6 @@ int bn_init_string(bn *t, const char *init_string, bn_err *err){
 	}
 	return count;
 	}
-
-int ch_to_int(char c){
-	if(isdigit(c)){
-		return c - '0';
-	} else {
-		return (tolower(c) - 'a') + 10;
-		}	
-	}
 	
 char int_to_ch (int c){
 	if(c >= 0 && c < 10){
@@ -246,43 +238,6 @@ char int_to_ch (int c){
 		return c + 'A' - 10;
 		}
 	}
-
-void bn_init_string_radix(bn *t, const char *init_string, int radix, bn_err *err){
-	t->sign = 1;
-	t->size = 1;
-	t->r_s = 1;
-	free(t->d);
-	t->d = (int*)calloc(1, sizeof(t->d));
-	if (t->d == NULL) {
-		fprintf(stderr, "Invalig argument\n");
-		*err = EINVARG;
-		return;
-	}
-	long from = 0, count = strlen(init_string);
-	if(count == 0){
-		return;
-	} else {
-		if(init_string[0] == '-'){
-			t->sign = 0;
-			from = 1;
-			}
-		if(init_string[0] == '+'){
-			from = 1;
-			}
-		while(init_string[from] == '0'){
-			++from;
-			}
-		if(init_string[from] == '\0'){		
-			return;
-			}
-		}
-	for(int i = from; i < count; ++i){	
-		multiple_int(t, radix, err);
-		add_int(t, ch_to_int(init_string[i]), err);
-		}
-	return;
-	}
-
 
 const char *bn_to_string(bn const *t, int radix, bn_err *err){
 	if(bn_null(t) == 1){

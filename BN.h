@@ -53,11 +53,7 @@ int div_int(bn* t, long c);
 
 int bn_init_string(bn* t, const char* init_string, bn_err* err);
 
-int ch_to_int(char c);
-
 char int_to_ch(int c);
-
-void bn_init_string_radix(bn* t, const char* init_string, int radix, bn_err* err);
 
 const char* bn_to_string(bn const* t, int radix, bn_err* err);
 
