@@ -73,6 +73,8 @@ int main() {
 
 	bn* k = bn_init(t, &err);
 
+	bn_cmp(t, k);
+
 	bn* l = bn_mul(t, k);
 	
 	bn* p = bn_add(t, k);
@@ -85,6 +87,12 @@ int main() {
 
 	bn_delete(l);
 	l = bn_add(f, k);
+
+	bn_delete(l);
+	l = bn_add(t, m);
+
+	bn_delete(l);
+	l = bn_add(m, t);
 
 	add_int(f, 1000000, &err);
 
