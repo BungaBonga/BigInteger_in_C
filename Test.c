@@ -95,11 +95,6 @@ int main() {
 	else
 		fprintf(stdout, "Test_14\t->\tPASSED\n");
 
-	if (print(t) != 0)
-		fprintf(stdout, "PRINT Test FAILED\n");
-	else
-		fprintf(stdout, "PRINT Test PASSED\n");
-
 	free(bn_to_string(t, 10, &err));
 
 	if (bn_init_int(t, -100, &err) != 1) 
@@ -285,6 +280,8 @@ int main() {
 	else
 		fprintf(stdout, "Test_44\t->\tPASSED\n");
 
+	free(bn_to_string(k, 10, &err));
+
 	if (bn_cmp(t, k) != 1)
 		fprintf(stdout, "Test_44\t->\tFAILED\n");
 	else
@@ -294,6 +291,11 @@ int main() {
 		fprintf(stdout, "Test_46\t->\tFAILED\n");
 	else
 		fprintf(stdout, "Test_46\t->\tPASSED\n");
+
+	if ((print(l) != 0) || (print(p) != 0) || (print(m) != 0) || (print(k) != 0))
+		fprintf(stdout, "PRINT Test FAILED\n");
+	else
+		fprintf(stdout, "PRINT Test PASSED\n");
 
 	bn_delete(u);
 	bn_delete(t);
