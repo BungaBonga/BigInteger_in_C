@@ -454,7 +454,7 @@ int *add(const bn *t, const  bn *right, int * size, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return INT_MAX;
+		return NULL;
 	}
 	int r = 0, i = 0;
 	int x = 0, mi = (right->r_s > t->r_s ? t->r_s : right->r_s);
@@ -510,7 +510,7 @@ int *diff(const bn *t, const bn *right, int * size, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return INT_MAX;
+		return NULL;
 	}
 	int r = 0;
 	int x = 0, mi = (right->r_s > t->r_s ? t->r_s : right->r_s);
@@ -550,7 +550,7 @@ int* multiple(const bn *t, const  bn *right, int * size, bn_err *err){
 	if (z == NULL) {
 		fprintf(stderr, "Invalig argument\n");
 		*err = EINVARG;
-		return INT_MAX;
+		return NULL;
 	}
 	int r = 0, i = 0, j = 0;
 	long long x;
