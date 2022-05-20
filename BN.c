@@ -316,8 +316,8 @@ int bn_cmp(bn const *left, bn const *right){
 	} else if(left->r_s < right->r_s  || (right->sign == 1 && left->sign == 0) || (right->sign == 1 && bn_null(left))){
 		return -1;
 	} else{
-		short int sign = 1;
-		if(left->sign + right->sign == 0){
+		int sign = 1;
+		if((left->sign + right->sign) == 0){
 			sign = -1;
 			}
 		int i = left->r_s - 1;
