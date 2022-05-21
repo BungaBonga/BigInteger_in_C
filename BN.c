@@ -41,8 +41,7 @@ int bn_null(bn const * t){
 		}
 	return 0;
 	}	
-	
-// добавление int к bn
+
 void add_int(bn* t, int c, bn_err *err){
 	if (t == NULL) {
 		*err = EINVARG;
@@ -78,7 +77,6 @@ void add_int(bn* t, int c, bn_err *err){
 	return;
 	}
 
-// умножение bn на int
 void multiple_int(bn* t, long c, bn_err *err){
 	if (t == NULL) {
 		*err = EINVARG;
@@ -163,14 +161,6 @@ int bn_init_string(bn *t, const char *init_string, bn_err *err){
 			}
 		while(init_string[from] == '0'){
 			++from;
-			}
-		if(init_string[from] == '\0'){
-			t->sign = 1;
-			t->size = 1;
-			t->r_s = 1;
-			free(t->d);
-			t->d = (int*)calloc(1, sizeof(t->d));
-			return 0;
 			}
 		t->size = (count - from - 1)/9 + 1;
 		t->r_s = t->size;

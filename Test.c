@@ -292,10 +292,35 @@ int main() {
 	else
 		fprintf(stdout, "Test_46\t->\tPASSED\n");
 
-	if ((print(l) != 0) || (print(p) != 0) || (print(m) != 0) || (print(k) != 0))
+	bn* tau = bn_new();
+	bn* neg = bn_new();
+	bn_init_int(neg, -5, & err);
+	bn_delete(tau);
+	tau = bn_div(neg, l);
+	bn_delete(tau);
+	tau = bn_new();
+	free(bn_to_string(neg, 10, &err));
+
+	if ((print(l) != 0) || (print(p) != 0) || (print(m) != 0) || (print(k) != 0) || print(tau) != 0 || print(neg) != 0)
 		fprintf(stdout, "PRINT Test FAILED\n");
 	else
 		fprintf(stdout, "PRINT Test PASSED\n");
+
+	bn_delete(tau);
+	bn_delete(neg);
+	tau = bn_new();
+	neg = bn_new();
+	bn_sign(tau);
+	bn_abs(tau);
+	bn_cmp(tau, neg);
+	bn_init_string(neg, "-1", &err);
+	bn_abs(neg);
+	bn_init_string(neg, "+0001", &err);
+	copy(l, p, &err);
+
+
+
+
 
 	bn_delete(u);
 	bn_delete(t);
